@@ -362,33 +362,3 @@ for i in range(N_BEST):
     logging.info("Save best genoms to {}".format(best_genome_file))
     with open(best_genome_file, "wb") as output:
         pickle.dump(best_genomes[i], output, pickle.HIGHEST_PROTOCOL)
-
-
-# 91.26 점은 23*24까지 MOL을 0으로 채운 결과임. (코드 이후에 변경했음)
-
-# 새롭게 적용한 내용들
-# 얼리스탑
-# 이전 지놈 저장해놓고 이용하기 (베스트 지놈 저장)
-# 로그 기록
-# 서치 속도 향상을 위해 기준점수 미달 시 절반은 새로운 (랜덤) 유전자 생성 (원래는 스코어 이닛보다 작을 경우 였음)
-# Line A, B 을 따로 학습 (뉴럴넷은 같은 사이즈)
-# CHANGE, STOP 적용
-# 스코어 목적함수 변경
-# 학습 에폭을 많이 했음. (이유는 계속 성장이 보여서, 즉 수렴을 아직 안했기 때문)
-# 한계점 1: 시작 재고를 기준으로 했을때 가능한 점수가 100점이 안됨. 남는게 무조건 생김. Upper bound를 계산해볼 수 있다.
-# 한계점 2: Change, Stop의 패널티가 커서 높은 점수를 얻은 경우를 보면 change, stop을 사용하지 않게 된다. (이것이 의도된 것인지, 목적함수 설정의 문제인지)
-# 4월 15~23일에 PRT 재고가 있는 경우 MOL 생산이 가능하도록 변경
-# 현재 상태 재고를 뉴럴넷의 인풋으로 넣어줌 (A와 B가 연결됨)
-# 수요가 18시 기준이므로, 뉴럴넷의 인풋도 18시 기준으로 수요를 반영함.
-# 수요분을 너무 많이 보는 듯 함. 2~3일치의 수요만 미리 봐도 수요 충족 가능. 30일치는 너무 많은 듯 하여 10일치 정도로 줄여 학습 속도를 향상시킴
-# MOL 재고를 현시간의 BLK재고로 환산하여 stock을 채우고, 뉴럴넷의 인풋으로 BLK 재고만 넣어줌
-
-# 개선해야 할점
-# 코드 정리, optimization
-# 업데이트를 두군데서 해서 문제임. update mask, predict
-# 변수명 문제. possible ot process -> not required check
-# CHANGE 뉴럴넷을 따로 둘 수 있음. (CHANGE 이벤트 수가 너무 많으므로, CHANGE를 하나로 두고, 그 중에 선택 가능한 CHANGE를 예측하는 뉴럴넷)
-# MOL개수를 실수로 예측하는 뉴럴넷으로 변경 가능. 현재는 0.5단위 카테고리 변수.
-# overfitting 하는 듯 하다? (러닝할수록 더 높아짐)
-# [v] Input을 현재 오더 뿐만 아니라 재고도 고려해서 해야 할듯. 물론 목적함수에서 이게 적용되고 있긴 함.
-# 15~23일 일때, change to X에서 X재고가 없는 경우 애초에 event mask를 False로 강제할 수 있음. (이 경우에는 change는 패널티만 증가시킴)
